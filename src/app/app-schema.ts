@@ -11,7 +11,7 @@ export const appSchema = defineToolcraft({
   canvas: {
     enabled: true,
     renderScale: true,
-    sizing: { mode: "editable-output" },
+    sizing: { defaultMode: "infinite", mode: "editable-output" },
     upload: true,
   },
   identity: appIdentity,

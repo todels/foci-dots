@@ -70,8 +70,28 @@ The quoted evidence must be an exact nontrivial raw substring of `Request` with 
 - Alternatives rejected: A separate top-level mode switch (would multiply applicability cases across every pattern control for no extra capability); drawing Field dashes as line strokes (breaks the circles-only system — trails of overlapping circles render identically); new burst-specific density controls (Columns, Dot size, Jitter, Contrast, and Invert already parameterize both variants).
 - State/output mapping: `pattern.source` gains `burst`/`field` options consumed by the shared preview and export frame renderer; `pattern.blackPoint`/`pattern.whitePoint` feed the image sampler through the `source-field` cache; all motion styles keep integer-cycle phase terms so loops stay seamless and forward-only.
 - Performance intent: ordinary-product-work
-- Verification: One bare `npm run verify:delivery` remains the initial receipt; this edit ran the focused unit suite (`dot-product.test.ts`, 25 tests) and the pattern-entity browser scenarios (pattern.source, pattern.contrast, pattern.invert, pattern.blackPoint, pattern.whitePoint, pattern.scale, pattern.angle, pattern.text, source.image) plus `npm run test:feature -- pattern.source pattern.contrast pattern.invert pattern.blackPoint pattern.whitePoint`.
+- Focused checks: the product renderer unit suite (25 tests) and the feature verification selectors pattern.source, pattern.contrast, pattern.invert, pattern.blackPoint, and pattern.whitePoint, which expanded to all nine pattern-entity browser scenarios and passed.
+- Verification: One bare `npm run verify:delivery` will derive and run the protected proof.
 - Risks: Field mode at maximum Columns draws ~47k circles per frame on the main thread (within the declared quadratic envelope); Burst ignores Arrangement by design since its geometry is polar.
+
+### Iteration 3 — Infinite workspace by default with a preview export boundary
+
+- Request: "right now its a canvas by default, imo it shouldnt be at all. it should just be a image which I can zoom in and out to … add a stroke around it so I know what is goign to be exported when i hit export"
+- Task type: Later feature work — canvas default mode and a preview-only boundary overlay; focused checks only.
+- User-visible result: The app opens in the infinite workspace: the pattern floats as one 1920×1080 image tile that pans and zooms freely, outlined by a subtle 1px boundary stroke marking exactly what Export PNG crops to. Toggling Infinity canvas off still restores the classic finite artboard, where the runtime artboard edge already communicates the export bounds so no stroke is drawn.
+- Source/reference checked: The runtime Infinity canvas contract in `core/setup-export.md` (default mode opt-in, dormant finite size, scene-bounds export crop) and the existing `sceneBoundsProvider` tile.
+- Reference inputs: None; `referenceInputs` stays `[]`.
+- Docs/contracts read: `schema-reference.md` (canvas.sizing defaultMode), `core/setup-export.md` (Infinity canvas), `core/runtime-boundary.md` (editing overlays stay out of export).
+- Contract rules applied: `canvas-no-app-ui`, `canvas-surface-preserved`, `infinity-canvas-scene-bounds`, `acceptance-product-observable`.
+- View interaction intent: unchanged `non-spatial`.
+- Interaction ownership: unchanged — the runtime-owned Infinity switch keeps mode ownership; the boundary is passive preview chrome with no interaction.
+- Decision: Opt into `canvas.sizing.defaultMode: "infinite"` so a fresh workspace and Reset start infinite, and draw the export boundary inside the preview draw call only when the committed canvas mode is infinite. The shared export renderer never draws the stroke, so artifacts stay clean while the preview always shows the exact crop.
+- Alternatives rejected: A DOM overlay ring (would sit outside the world transform and drift under pan/zoom); drawing the stroke in finite mode too (duplicates the runtime artboard edge); a schema switch for the boundary (passive chrome, not a product value).
+- State/output mapping: `canvas.mode` alone gates the stroke; infinite export continues to crop to the `sceneBoundsProvider` tile, which the stroke traces exactly; the dormant finite size, restoration, undo/redo, and persistence behavior stay runtime-owned and unchanged.
+- Performance intent: ordinary-product-work
+- Focused checks: the product renderer unit suite and the canvas.infinity.mode, canvas.infinity.export, canvas.renderScale, export.includeBackground, actions.output, and persistence.reload browser scenarios, with test sessions normalizing to finite mode so frame-scoped proofs keep a stable artboard.
+- Verification: One bare `npm run verify:delivery` will derive and run the protected proof.
+- Risks: Browser proofs assume the finite normalization step in the shared session helper; a future test that skips it starts in the infinite workspace.
 
 ## Decisions
 

@@ -193,6 +193,19 @@ export function DotsCanvas(): React.JSX.Element | null {
         sampler: samplerState.result,
         values: patternValues,
       });
+      if (canvasMode === "infinite") {
+        // Preview-only export boundary: shows exactly what Export PNG crops
+        // to while the pattern floats in the infinite workspace. The export
+        // renderer never draws it.
+        context.strokeStyle = "rgba(128, 128, 128, 0.65)";
+        context.lineWidth = 1;
+        context.strokeRect(
+          rect.x + 0.5,
+          rect.y + 0.5,
+          frameWidth - 1,
+          frameHeight - 1,
+        );
+      }
     };
 
     if (pipeline) {
@@ -201,6 +214,7 @@ export function DotsCanvas(): React.JSX.Element | null {
       draw();
     }
   }, [
+    canvasMode,
     frameHeight,
     frameWidth,
     includeBackground,

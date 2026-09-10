@@ -407,7 +407,10 @@ describe("Foci Dots product renderer", () => {
   });
 
   it("infinity canvas hides finite sizing and restores it", () => {
-    expect(appSchema.canvas.sizing).toEqual({ mode: "editable-output" });
+    expect(appSchema.canvas.sizing).toEqual({
+      defaultMode: "infinite",
+      mode: "editable-output",
+    });
     expect(appSchema.canvas.size).toMatchObject({ height: 1080, width: 1920 });
   });
 

@@ -395,13 +395,26 @@ export async function proveControlApplicabilityMatrix(
   return cases;
 }
 
-/** Opens the app, creates the proof session, and pauses default playback. */
+/**
+ * Opens the app, creates the proof session, pauses default playback, and
+ * normalizes the workspace to finite mode (the product defaults to the
+ * infinite workspace) so frame-scoped proofs keep a stable artboard.
+ */
 export async function startProductSession(
   page: Page,
 ): Promise<ToolcraftBrowserProofSession> {
   await page.goto("/");
   const session = await createToolcraftBrowserProofSession(page);
   await pausePlayback(page);
+  const infinityField = await getToolcraftControlFieldByTarget(
+    page,
+    "canvas.infinity",
+  );
+  const infinitySwitch = infinityField.getByRole("switch");
+  if ((await infinitySwitch.getAttribute("aria-checked")) === "true") {
+    await infinitySwitch.click();
+    await expect(infinitySwitch).toHaveAttribute("aria-checked", "false");
+  }
   return session;
 }
 

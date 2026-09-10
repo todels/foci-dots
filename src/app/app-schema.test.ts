@@ -11,7 +11,10 @@ import { dotTargets } from "./foci/dot-values";
 describe("appSchema", () => {
   it("publishes the Foci Dots product contract", () => {
     expect(appSchema.canvas.enabled).toBe(true);
-    expect(appSchema.canvas.sizing).toEqual({ mode: "editable-output" });
+    expect(appSchema.canvas.sizing).toEqual({
+      defaultMode: "infinite",
+      mode: "editable-output",
+    });
     expect(appSchema.canvas.upload).toBe(true);
     expect(appSchema.canvas.renderScale.enabled).toBe(true);
     expect(appSchema.panels.controls?.sections[0]?.title).toBe("Setup");

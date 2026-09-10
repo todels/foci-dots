@@ -46,6 +46,15 @@ test(
     await page.reload();
 
     const session = await createToolcraftBrowserProofSession(page);
+    // The product defaults to the infinite workspace; finite sizing controls
+    // are part of this proof, so normalize to finite mode first.
+    const infinitySwitch = page
+      .locator('[data-toolcraft-control-target="canvas.infinity"]')
+      .getByRole("switch");
+    if ((await infinitySwitch.getAttribute("aria-checked")) === "true") {
+      await infinitySwitch.click();
+      await expect(infinitySwitch).toHaveAttribute("aria-checked", "false");
+    }
     const persistedWorkspace = session.observe<PersistenceObservation>((root) => {
       const canvas = root.querySelector<HTMLElement>(
         "[data-toolcraft-editable-canvas]",
