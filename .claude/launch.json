@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "foci-dots",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-lc", "TOOLCRAFT_DEV_PORT=5199 npm run dev"],
+      "port": 5199
+    }
+  ]
+}
