@@ -14,7 +14,8 @@ export const uploadFixture = {
   svg:
     '<svg xmlns="http://www.w3.org/2000/svg" width="192" height="108">' +
     '<rect width="192" height="108" fill="#FFFFFF"/>' +
-    '<rect width="96" height="108" fill="#000000"/></svg>',
+    '<rect width="64" height="108" fill="#000000"/>' +
+    '<rect x="64" width="64" height="108" fill="#808080"/></svg>',
 } as const;
 
 /** Uploads the shared SVG fixture into the image fileDrop control. */

@@ -12,6 +12,24 @@ import { test } from "./toolcraft-product-test";
 
 test.setTimeout(240_000);
 
+async function ensureSourceImageUploaded(
+  session: Awaited<ReturnType<typeof startProductSession>>,
+): Promise<void> {
+  const uploaded = await getToolcraftBrowserProofPage(session).then(
+    (currentPage) =>
+      currentPage
+        .locator('[data-toolcraft-control-target="source.image"] img[alt]')
+        .count(),
+  );
+  if (uploaded === 0) {
+    await expectToolcraftProductObservableToChange(
+      session,
+      uploadFixtureAction(session, "source.image"),
+      { selector: productCanvasSelector },
+    );
+  }
+}
+
 test("browser: pattern.source selects the field family", async ({ page }) => {
   const session = await startProductSession(page);
   await proveControlApplicabilityMatrix(session, {
@@ -54,23 +72,33 @@ test("browser: pattern.contrast remaps field values", async ({ page }) => {
         applicabilityCase.selectorTarget === "pattern.source" &&
         applicabilityCase.selectorValue === "image"
       ) {
-        const uploaded = await getToolcraftBrowserProofPage(session).then(
-          (currentPage) =>
-            currentPage
-              .locator('[data-toolcraft-control-target="source.image"] img[alt]')
-              .count(),
-        );
-        if (uploaded === 0) {
-          await expectToolcraftProductObservableToChange(
-            session,
-            uploadFixtureAction(session, "source.image"),
-            { selector: productCanvasSelector },
-          );
-        }
+        await ensureSourceImageUploaded(session);
       }
     },
     requirementId: "pattern.contrast",
     target: "pattern.contrast",
+  });
+});
+
+test("browser: pattern.blackPoint deepens halftone shadows", async ({ page }) => {
+  const session = await startProductSession(page);
+  await proveControlApplicabilityMatrix(session, {
+    prepareVisibleCase: async () => {
+      await ensureSourceImageUploaded(session);
+    },
+    requirementId: "pattern.blackPoint",
+    target: "pattern.blackPoint",
+  });
+});
+
+test("browser: pattern.whitePoint lifts halftone highlights", async ({ page }) => {
+  const session = await startProductSession(page);
+  await proveControlApplicabilityMatrix(session, {
+    prepareVisibleCase: async () => {
+      await ensureSourceImageUploaded(session);
+    },
+    requirementId: "pattern.whitePoint",
+    target: "pattern.whitePoint",
   });
 });
 

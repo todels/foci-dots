@@ -5,7 +5,7 @@ import type { ToolcraftSceneRect } from "@/toolcraft/runtime";
 import { appComposition } from "../app-composition";
 import { appSchema } from "../app-schema";
 import { createProceduralFieldSampler, shapeDotFieldValue } from "./dot-field";
-import { createRasterFieldSampler } from "./dot-raster";
+import { applyDotLevels, createRasterFieldSampler } from "./dot-raster";
 import {
   drawDotPatternFrame,
   getDotBackingSize,
@@ -153,6 +153,24 @@ describe("Foci Dots product renderer", () => {
       probe("gradient"),
     ]);
     expect(signatures.size).toBe(4);
+
+    // The depth sources render their own geometry: burst streams perspective
+    // rays from a scattered core with a guaranteed center dot; field renders
+    // center-facing circle trails on the lattice.
+    const burst = renderFrame({ motionStyle: "none", source: "burst" });
+    const fieldPattern = renderFrame({ motionStyle: "none", source: "field" });
+    const grid = renderFrame({ motionStyle: "none" });
+    expect(burst.dots.length).toBeGreaterThan(0);
+    expect(fieldPattern.dots.length).toBeGreaterThan(grid.dots.length);
+    expect(burst.dots.length).not.toBe(fieldPattern.dots.length);
+    const center = { x: frame.width / 2, y: frame.height / 2 };
+    expect(
+      burst.dots.some(
+        (dot) =>
+          Math.abs(dot.x - center.x) < 0.01 &&
+          Math.abs(dot.y - center.y) < 0.01,
+      ),
+    ).toBe(true);
   });
 
   it("uploaded image drives the halftone field", () => {
@@ -230,6 +248,26 @@ describe("Foci Dots product renderer", () => {
     expect(flat).toBeCloseTo(0.5, 5);
     expect(neutral).toBeCloseTo(0.7, 5);
     expect(punchy).toBeGreaterThan(neutral);
+  });
+
+  it("image black point deepens halftone shadows", () => {
+    // A mid-gray cell (darkness 0.5) grows toward a full dot as the black
+    // point rises past its luminance.
+    expect(applyDotLevels(0.5, 0, 100)).toBeCloseTo(0.5, 5);
+    expect(applyDotLevels(0.5, 40, 100)).toBeCloseTo(1 - 0.1 / 0.6, 5);
+    expect(applyDotLevels(0.5, 60, 100)).toBe(1);
+    expect(applyDotLevels(0, 40, 100)).toBe(0);
+  });
+
+  it("image white point lifts halftone highlights", () => {
+    // Lowering the white point clips light tones to paper: their dots shrink
+    // and vanish once their luminance passes the point.
+    expect(applyDotLevels(0.2, 0, 100)).toBeCloseTo(0.2, 5);
+    expect(applyDotLevels(0.2, 0, 60)).toBe(0);
+    expect(applyDotLevels(0.4, 0, 70)).toBeLessThan(
+      applyDotLevels(0.4, 0, 100),
+    );
+    expect(applyDotLevels(0.4, 0, 70)).toBeGreaterThan(0);
   });
 
   it("pattern invert flips the field", () => {

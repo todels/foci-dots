@@ -122,6 +122,7 @@ export function DotsCanvas(): React.JSX.Element | null {
     {
       angle: patternValues.angle,
       arrangement: patternValues.arrangement,
+      blackPoint: patternValues.blackPoint,
       columns: patternValues.columns,
       frameHeight,
       frameWidth,
@@ -129,6 +130,7 @@ export function DotsCanvas(): React.JSX.Element | null {
       scale: patternValues.scale,
       source: patternValues.source,
       text: patternValues.text,
+      whitePoint: patternValues.whitePoint,
     },
     () =>
       buildDotFieldSampler({

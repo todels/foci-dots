@@ -12,6 +12,8 @@ export const dotTargets = {
   scale: "pattern.scale",
   angle: "pattern.angle",
   contrast: "pattern.contrast",
+  blackPoint: "pattern.blackPoint",
+  whitePoint: "pattern.whitePoint",
   invert: "pattern.invert",
   text: "pattern.text",
   imageSource: "source.image",
@@ -24,6 +26,8 @@ export type DotPatternSource =
   | "rings"
   | "noise"
   | "gradient"
+  | "burst"
+  | "field"
   | "image"
   | "text";
 
@@ -42,6 +46,8 @@ export const dotDefaults = {
   scale: 100,
   angle: 30,
   contrast: 60,
+  blackPoint: 0,
+  whitePoint: 100,
   invert: false,
   text: "FOCI",
   motionStyle: "wave" as DotMotionStyle,
@@ -55,6 +61,8 @@ const patternSources: readonly DotPatternSource[] = [
   "rings",
   "noise",
   "gradient",
+  "burst",
+  "field",
   "image",
   "text",
 ];
@@ -107,6 +115,8 @@ export type DotPatternValues = {
   scale: number;
   angle: number;
   contrast: number;
+  blackPoint: number;
+  whitePoint: number;
   invert: boolean;
   text: string;
   motionStyle: DotMotionStyle;
@@ -150,6 +160,14 @@ export function readDotPatternValues(
     scale: readNumber(values[dotTargets.scale], dotDefaults.scale),
     angle: readNumber(values[dotTargets.angle], dotDefaults.angle),
     contrast: readNumber(values[dotTargets.contrast], dotDefaults.contrast),
+    blackPoint: readNumber(
+      values[dotTargets.blackPoint],
+      dotDefaults.blackPoint,
+    ),
+    whitePoint: readNumber(
+      values[dotTargets.whitePoint],
+      dotDefaults.whitePoint,
+    ),
     invert: readBoolean(values[dotTargets.invert], dotDefaults.invert),
     text: readString(values[dotTargets.text], dotDefaults.text),
     motionStyle: (motionStyles.includes(motionStyle as DotMotionStyle)

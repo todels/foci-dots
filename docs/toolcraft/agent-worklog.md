@@ -55,6 +55,24 @@ The quoted evidence must be an exact nontrivial raw substring of `Request` with 
 - Verification: One bare `npm run verify:delivery` will derive and run the protected proof.
 - Risks: Image halftone quality depends on uploaded image contrast (contrast control mitigates); hex arrangement approximates row offset rather than true hex packing; draw-dots is main-thread Canvas 2D — the derived render-plan assessment may leave a pending kernel benchmark requirement, which first delivery defers per the deferred coverage policy.
 
+### Iteration 2 — Depth pattern sources and image levels
+
+- Request: "there should be another mode completely where i can create these 3d dot patterns … one is agressive (always one in the middle btw) and one which is more chill" and "it should create dots based on the differnet lights in that images. i should be able to ofc adjust the dots from there including the contrast, black point etfc"
+- Task type: Later feature work — two new pattern sources with their own renderers, plus image-levels controls; focused checks only.
+- User-visible result: The Source select gains **Burst** (perspective rays of circles streaming from a scattered core to a dotted square frame, always one circle dead center) and **Field** (center-facing circle trails on the lattice, length growing with radial distance, one dot at the exact center). Image mode gains **Black point** and **White point** sliders that remap sampled luminance before dot sizing.
+- Source/reference checked: Two user-supplied reference images — an aggressive radial burst plate and a chill center-facing dash field — used as style direction only.
+- Reference inputs: None registered; static style direction, so `referenceInputs` stays `[]`.
+- Docs/contracts read: Contracts internalized this project from `workflow.md`, `core/control-selection.md`, `core/layout.md`, `core/performance.md`, `core/timeline-animation.md`, `schema-reference.md`, `component-rules.md`, `acceptance-testing.md`.
+- Contract rules applied: `controls-product-coverage`, `controls-section-inventory-required`, `controls-component-layout-invariants`, `acceptance-product-observable`, `performance-coverage-levels`, `timeline-enabled-behavior`.
+- View interaction intent: unchanged `non-spatial` — the depth sources are two-dimensional projections, not an editable 3D scene.
+- Interaction ownership: unchanged — both new sources are panel-selected options of the existing `pattern.source` property edit.
+- Decision: Model both references as one radial-depth family dispatched from the shared frame renderer: Burst is polar (spokes with `t^1.6` perspective easing, hash-scattered core, dotted frame, wave motion streams depth `(t + progress) mod 1`), Field is cartesian (lattice cells render 5-circle trails angled at the center, length from radial distance). Levels are one pure `applyDotLevels` remap on sampled luminance applied inside the memoized `source-field` pass; both new sliders join that pass's inputs, cache key, and control-drag invalidation.
+- Alternatives rejected: A separate top-level mode switch (would multiply applicability cases across every pattern control for no extra capability); drawing Field dashes as line strokes (breaks the circles-only system — trails of overlapping circles render identically); new burst-specific density controls (Columns, Dot size, Jitter, Contrast, and Invert already parameterize both variants).
+- State/output mapping: `pattern.source` gains `burst`/`field` options consumed by the shared preview and export frame renderer; `pattern.blackPoint`/`pattern.whitePoint` feed the image sampler through the `source-field` cache; all motion styles keep integer-cycle phase terms so loops stay seamless and forward-only.
+- Performance intent: ordinary-product-work
+- Verification: One bare `npm run verify:delivery` remains the initial receipt; this edit ran the focused unit suite (`dot-product.test.ts`, 25 tests) and the pattern-entity browser scenarios (pattern.source, pattern.contrast, pattern.invert, pattern.blackPoint, pattern.whitePoint, pattern.scale, pattern.angle, pattern.text, source.image) plus `npm run test:feature -- pattern.source pattern.contrast pattern.invert pattern.blackPoint pattern.whitePoint`.
+- Risks: Field mode at maximum Columns draws ~47k circles per frame on the main thread (within the declared quadratic envelope); Burst ignores Arrangement by design since its geometry is polar.
+
 ## Decisions
 
 ### Renderer

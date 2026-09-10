@@ -49,7 +49,7 @@ type ProceduralFieldOptions = {
  * 100 is the neutral frequency for each field family.
  */
 export function createProceduralFieldSampler(
-  source: "waves" | "rings" | "noise" | "gradient",
+  source: "waves" | "rings" | "noise" | "gradient" | "burst" | "field",
   options: ProceduralFieldOptions,
 ): DotFieldSampler {
   const { angleDeg, aspect, scale } = options;
@@ -93,6 +93,18 @@ export function createProceduralFieldSampler(
         const span = Math.abs(dirX) * aspect + Math.abs(dirY);
         const normalized = span > 0 ? along / span + 0.5 : 0.5;
         return Math.min(1, Math.max(0, normalized)) * frequency;
+      };
+    }
+    case "burst":
+    case "field": {
+      // Radial depth: 0 at the vanishing point, 1 at the frame corners. The
+      // depth renderers own their geometry; this sampler keeps the shared
+      // field/pipeline contract intact for the two depth sources.
+      const maxDistance = Math.hypot(aspect, 1) / 2;
+      return (u, v) => {
+        const x = (u - 0.5) * aspect;
+        const y = v - 0.5;
+        return Math.min(1, Math.hypot(x, y) / maxDistance);
       };
     }
   }

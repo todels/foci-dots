@@ -142,6 +142,8 @@ export const appSchema = defineToolcraft({
                 { label: "Rings", value: "rings" },
                 { label: "Noise", value: "noise" },
                 { label: "Gradient", value: "gradient" },
+                { label: "Burst", value: "burst" },
+                { label: "Field", value: "field" },
                 { label: "Image", value: "image" },
                 { label: "Text", value: "text" },
               ],
@@ -149,6 +151,7 @@ export const appSchema = defineToolcraft({
               performanceReason:
                 "The source selects which sampler builds; the dot count still bounds its cost.",
               performanceRole: "responsiveness",
+              semanticGroup: "field-source",
               target: dotTargets.source,
               type: "select",
             },
@@ -162,6 +165,7 @@ export const appSchema = defineToolcraft({
               performanceReason:
                 "The uploaded image is sampled once per grid cell, so the dot lattice bounds its cost.",
               performanceRole: "responsiveness",
+              semanticGroup: "field-source",
               target: dotTargets.imageSource,
               type: "fileDrop",
             },
@@ -176,6 +180,7 @@ export const appSchema = defineToolcraft({
               performanceReason:
                 "Text is rasterized once per change into the fixed grid resolution.",
               performanceRole: "responsiveness",
+              semanticGroup: "field-source",
               target: dotTargets.text,
               textValueKind: "single-line",
               type: "text",
@@ -192,6 +197,7 @@ export const appSchema = defineToolcraft({
               },
               defaultValue: dotDefaults.scale,
               label: "Scale",
+              semanticGroup: "field-shaping",
               max: 300,
               min: 10,
               performanceReason:
@@ -215,6 +221,7 @@ export const appSchema = defineToolcraft({
               },
               defaultValue: dotDefaults.angle,
               label: "Angle",
+              semanticGroup: "field-shaping",
               max: 360,
               min: 0,
               performanceReason:
@@ -230,6 +237,7 @@ export const appSchema = defineToolcraft({
               applicability: { mode: "always" },
               defaultValue: dotDefaults.contrast,
               label: "Contrast",
+              semanticGroup: "field-shaping",
               max: 100,
               min: 0,
               performanceReason:
@@ -240,6 +248,44 @@ export const appSchema = defineToolcraft({
               step: 1,
               type: "slider",
             },
+            blackPoint: {
+              applicability: {
+                all: [{ equals: "image", target: dotTargets.source }],
+                mode: "conditional",
+              },
+              defaultValue: dotDefaults.blackPoint,
+              label: "Black point",
+              max: 99,
+              min: 0,
+              performanceReason:
+                "Levels remap sampled luminance at constant per-cell cost.",
+              performanceRole: "responsiveness",
+              semanticGroup: "image-levels",
+              sliderValueKind: "continuous",
+              step: 1,
+              target: dotTargets.blackPoint,
+              type: "slider",
+              unit: "%",
+            },
+            whitePoint: {
+              applicability: {
+                all: [{ equals: "image", target: dotTargets.source }],
+                mode: "conditional",
+              },
+              defaultValue: dotDefaults.whitePoint,
+              label: "White point",
+              max: 100,
+              min: 1,
+              performanceReason:
+                "Levels remap sampled luminance at constant per-cell cost.",
+              performanceRole: "responsiveness",
+              semanticGroup: "image-levels",
+              sliderValueKind: "continuous",
+              step: 1,
+              target: dotTargets.whitePoint,
+              type: "slider",
+              unit: "%",
+            },
             invert: {
               applicability: { mode: "always" },
               defaultValue: dotDefaults.invert,
@@ -247,6 +293,7 @@ export const appSchema = defineToolcraft({
               performanceReason:
                 "Inversion flips sampled values at constant per-dot cost.",
               performanceRole: "responsiveness",
+              semanticGroup: "field-shaping",
               target: dotTargets.invert,
               type: "switch",
             },

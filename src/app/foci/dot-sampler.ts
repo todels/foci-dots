@@ -3,6 +3,7 @@ import {
   type DotFieldSampler,
 } from "./dot-field";
 import {
+  applyDotLevels,
   createRasterFieldSampler,
   rasterizeImageToGrid,
   rasterizeTextToGrid,
@@ -43,7 +44,17 @@ export function buildDotFieldSampler(
         return emptyFieldSampler;
       }
       const grid = rasterizeImageToGrid(image, columns, rows, imageTransform);
-      return grid ? createRasterFieldSampler(grid) : emptyFieldSampler;
+      if (!grid) {
+        return emptyFieldSampler;
+      }
+      for (let index = 0; index < grid.values.length; index += 1) {
+        grid.values[index] = applyDotLevels(
+          grid.values[index],
+          values.blackPoint,
+          values.whitePoint,
+        );
+      }
+      return createRasterFieldSampler(grid);
     }
     case "text": {
       const grid = rasterizeTextToGrid(values.text, columns, rows);

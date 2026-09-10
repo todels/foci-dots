@@ -135,6 +135,24 @@ export function rasterizeTextToGrid(
   };
 }
 
+/**
+ * Applies black/white point levels to one alpha-weighted darkness value.
+ * Points are schema percent values on the luminance axis: luminance at or
+ * below the black point maps to a full-size dot, at or above the white point
+ * to no dot, with a linear ramp between.
+ */
+export function applyDotLevels(
+  darkness: number,
+  blackPoint: number,
+  whitePoint: number,
+): number {
+  const black = Math.min(blackPoint, whitePoint - 1) / 100;
+  const white = Math.max(whitePoint, blackPoint + 1) / 100;
+  const luminance = 1 - Math.min(1, Math.max(0, darkness));
+  const remapped = (luminance - black) / (white - black);
+  return 1 - Math.min(1, Math.max(0, remapped));
+}
+
 /** Wraps a raster grid in the shared field sampler shape. */
 export function createRasterFieldSampler(
   grid: DotRasterGrid,

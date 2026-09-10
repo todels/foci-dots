@@ -118,7 +118,13 @@ export const appPerformance: ToolcraftEnvelopePerformanceConfig =
         browser: true,
         browserTestName: "browser perf: field slider drag stays live",
         controlLabel: "Columns",
-        coversTargets: ["grid.columns", "pattern.angle", "pattern.scale"],
+        coversTargets: [
+          "grid.columns",
+          "pattern.angle",
+          "pattern.blackPoint",
+          "pattern.scale",
+          "pattern.whitePoint",
+        ],
         expectedObservable:
           "Dragging Columns, Scale, or Angle updates the rendered lattice during the gesture.",
         fixture: "default waves pattern at maximum columns",

@@ -1,5 +1,6 @@
 import type { ToolcraftSceneRect } from "@/toolcraft/runtime";
 
+import { drawBurstFrame, drawFieldFrame } from "./dot-depth-renderer";
 import { hash2, shapeDotFieldValue, type DotFieldSampler } from "./dot-field";
 import type { DotPatternValues } from "./dot-values";
 
@@ -78,6 +79,16 @@ export function drawDotPatternFrame(
   if (includeBackground) {
     context.fillStyle = values.background;
     context.fillRect(frame.x, frame.y, width, height);
+  }
+
+  if (values.source === "burst" || values.source === "field") {
+    context.fillStyle = values.dotColor;
+    context.beginPath();
+    const drawDepthFrame =
+      values.source === "burst" ? drawBurstFrame : drawFieldFrame;
+    drawDepthFrame(context, frame, { loopProgress, values });
+    context.fill();
+    return;
   }
 
   const columns = Math.max(1, Math.round(values.columns));

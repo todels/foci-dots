@@ -35,7 +35,13 @@ export const fociDotsPipeline = registerToolcraftRendererPipeline<
     {
       interaction: "control-drag",
       invalidates: ["source-field", "draw-dots"],
-      targets: [dotTargets.columns, dotTargets.scale, dotTargets.angle],
+      targets: [
+        dotTargets.columns,
+        dotTargets.scale,
+        dotTargets.angle,
+        dotTargets.blackPoint,
+        dotTargets.whitePoint,
+      ],
     },
     {
       interaction: "control-change",
@@ -106,6 +112,8 @@ export const fociDotsPipeline = registerToolcraftRendererPipeline<
         "arrangement",
         "text",
         "imageKey",
+        "blackPoint",
+        "whitePoint",
         "frameWidth",
         "frameHeight",
       ],
@@ -119,6 +127,8 @@ export const fociDotsPipeline = registerToolcraftRendererPipeline<
         dotTargets.source,
         dotTargets.scale,
         dotTargets.angle,
+        dotTargets.blackPoint,
+        dotTargets.whitePoint,
         dotTargets.text,
         dotTargets.imageSource,
         dotTargets.columns,
